@@ -1,0 +1,792 @@
+openapi: 3.0.3
+info:
+  title: Basic Book CRUD API Documentation
+  description: Documentation for Basic Book CRUD API
+  version: 0.0.1
+servers:
+  - url: https://book-crud-service-6dmqxfovfq-et.a.run.app
+    description: Remote Server
+
+paths:
+  /api/books:
+    get:
+      summary: Get list of book model added by user
+      tags:
+        - "Book"
+      security:
+        - UserAuth: [ ]
+      parameters:
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: Response Accept type. Must be value of "application/json" for API.
+            example: "application/json"
+          description: MIME type for the response format. Must be value of "application/json" for API.
+          required: true
+      responses:
+        200:
+          description: Return all books owned by authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IndexBookResponse200"
+        401:
+          description: User is unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/books/add:
+    post:
+      summary: "Add new Book model to user's List of Books"
+      tags:
+        - "Book"
+      security:
+        - UserAuth: [ ]
+      parameters:
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: Response Accept type. Must be value of "application/json" for API.
+            example: "application/json"
+          description: MIME type for the response format. Must be value of "application/json" for API.
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreBookRequest"
+      responses:
+        200:
+          description: Add new Book success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Add Book description message
+                    example: Book created
+                  book:
+                    $ref: "#/components/schemas/Book"
+        401:
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        422:
+          description: Request body error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreBookResponse422"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/books/{book_id}/edit:
+    put:
+      summary: "Update user's Book model"
+      tags:
+        - "Book"
+      security:
+        - UserAuth: [ ]
+      parameters:
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: Response Accept type. Must be value of "application/json" for API.
+            example: "application/json"
+          description: MIME type for the response format. Must be value of "application/json" for API.
+          required: true
+        - in: path
+          name: book_id
+          schema:
+            type: number
+            description: Book model identifier
+            example: 1
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreBookRequest"
+      responses:
+        200:
+          description: Update Book success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Update Book description message
+                    example: Book updated
+                  book:
+                    $ref: "#/components/schemas/Book"
+        401:
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        403:
+          description: User doesn't have right to do the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        422:
+          description: Request body error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreBookResponse422"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/books/{book_id}:
+    get:
+      summary: Get specific book model by Book ID
+      tags:
+        - "Book"
+      security:
+        - UserAuth: [ ]
+      parameters:
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: Response Accept type. Must be value of "application/json" for API.
+            example: "application/json"
+          description: MIME type for the response format. Must be value of "application/json" for API.
+          required: true
+        - in: path
+          name: book_id
+          schema:
+            type: string
+            description: Book ID
+          required: true
+      responses:
+        200:
+          description: Return specific book model by Book ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        401:
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        403:
+          description: User doesn't have right to do the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Book ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Delete specific book model by Book ID
+      tags:
+        - "Book"
+      security:
+        - UserAuth: [ ]
+      parameters:
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: Response Accept type. Must be value of "application/json" for API.
+            example: "application/json"
+          description: MIME type for the response format. Must be value of "application/json" for API.
+          required: true
+        - in: path
+          name: book_id
+          schema:
+            type: string
+            description: Book ID
+          required: true
+      responses:
+        200:
+          description: Delete Book success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Book delete description message
+                    example: Book deleted
+                  book:
+                    $ref: "#/components/schemas/Book"
+        401:
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        403:
+          description: User doesn't have right to do the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Book ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/register:
+    post:
+      summary: Register new user account
+      tags:
+        - "User"
+      parameters:
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: Response Accept type. Must be value of "application/json" for API.
+            example: "application/json"
+          description: MIME type for the response format. Must be value of "application/json" for API.
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreUserRequest"
+      responses:
+        200:
+          description: Register new user success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Register user success message detail.
+                    example: User created
+                  user:
+                    $ref: "#/components/schemas/User"
+        422:
+          description: Request body error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreUserResponse422"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/login:
+    post:
+      summary: Create session token to authenticated user
+      tags:
+        - "User"
+      parameters:
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: Response Accept type. Must be value of "application/json" for API.
+            example: "application/json"
+          description: MIME type for the response format. Must be value of "application/json" for API.
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginUserRequest"
+      responses:
+        200:
+          description: Login success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: User authenticate.
+                    example: User created
+                  token:
+                    type: string
+                    description: User session token
+                    example: "6|v6TLNNdBjdHHLUqtw2aENki82b4cu4V10lz2yLee"
+        401:
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        422:
+          description: Request body error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginUserResponse422"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/user:
+    get:
+      summary: Get profile of authenticated User
+      tags:
+        - "User"
+      security:
+        - UserAuth: [ ]
+      parameters:
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: Response Accept type. Must be value of "application/json" for API.
+            example: "application/json"
+          description: MIME type for the response format. Must be value of "application/json" for API.
+          required: true
+      responses:
+        200:
+          description: Get user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/user/logout:
+    delete:
+      summary: Delete authenticated user session token
+      tags:
+        - "User"
+      security:
+        - UserAuth: [ ]
+      parameters:
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: Response Accept type. Must be value of "application/json" for API.
+            example: "application/json"
+          description: MIME type for the response format. Must be value of "application/json" for API.
+          required: true
+      responses:
+        200:
+          description: User logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Logout success detail.
+                    example: Logged out
+        401:
+          description: User is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  securitySchemes:
+    UserAuth:
+      description: Autentikasi untuk user
+      type: http
+      scheme: bearer
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Book ID
+          example: 1
+        user_id:
+          type: number
+          description: User ID
+          example: 1
+        isbn:
+          type: string
+          description: Book ISBN Number
+          example: "9781491943533"
+        title:
+          type: string
+          description: Book title
+          example: Practical Modern JavaScript
+        subtitle:
+          type: string
+          description: Book subtitle
+          example: Dive into ES6 and the Future of JavaScript
+          nullable: true
+        author:
+          type: string
+          description: Book author
+          example: "Nicolás Bevacqua"
+          nullable: true
+        published:
+          type: string
+          description: "Book publish date (format: Y-m-d H:i:s)"
+          example: "2017-07-16 00:00:00"
+          nullable: true
+        publisher:
+          type: string
+          description: Book publisher
+          example: "O'Reilly Media"
+          nullable: true
+        pages:
+          type: number
+          description: Book total page
+          example: 334
+          nullable: true
+        description:
+          type: string
+          description: Book description
+          example: "To get the most out of modern JavaScript, you need learn the latest features of its parent specification, ECMAScript 6 (ES6). This book provides a highly practical look at ES6, without getting lost in the specification or its implementation details."
+          nullable: true
+        website:
+          type: string
+          description: Book Url
+          example: "https://github.com/mjavascript/practical-modern-javascript"
+          nullable: true
+        created_at:
+          type: string
+          description: Datetime when book model was created
+          example: "2023-01-12T14:50:05.000000Z"
+        updated_at:
+          type: string
+          description: Datetime when book model was last updated
+          example: "2023-01-12T14:50:05.000000Z"
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: User ID
+          example: 1
+        name:
+          type: string
+          description: User name
+          example: Mark
+        email_verified_at:
+          type: string
+          description: Datetime when user was verified
+          example: "2023-01-13T03:16:45.000000Z"
+        created_at:
+          type: string
+          description: Datetime when user model was created.
+          example: "2023-01-13T03:16:45.000000Z"
+        updated_at:
+          type: string
+          description: Datetime when user model last updated.
+          example: "2023-01-13T03:16:45.000000Z"
+    IndexBookResponse200:
+      type: object
+      properties:
+        current_page:
+          type: number
+          description: Current page number.
+          example: 1
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Book"
+        first_page_url:
+          type: string
+          description: Pagination first page URL.
+          example: https://basic-book-crud-e3u54evafq-et.a.run.app/api/books?page=1
+        from:
+          type: number
+          description: Number of the first item in the page.
+          nullable: true
+          example: 1
+        last_page:
+          type: number
+          description: Page number of the last available page.
+          example: 2
+        last_page_url:
+          type: string
+          description: Pagination last page URL.
+          example: https://basic-book-crud-e3u54evafq-et.a.run.app/api/books?page=2
+        next_page_url:
+          type: string
+          description: URL for the next page.
+          nullable: true
+          example: https://basic-book-crud-e3u54evafq-et.a.run.app/api/books?page=2
+        path:
+          type: string
+          description: URL of the page.
+          example: https://basic-book-crud-e3u54evafq-et.a.run.app/api/books
+        per_page:
+          type: number
+          description: Number of items per page.
+          example: 10
+        prev_page_url:
+          type: string
+          description: URL for the next page.
+          nullable: true
+          example: https://basic-book-crud-e3u54evafq-et.a.run.app/api/books?page=1
+        to:
+          type: number
+          description: Number of the last item in the page.
+          nullable: true
+          example: 10
+        total:
+          type: number
+          description: Total of items.
+          example: 16
+    StoreBookRequest:
+      type: object
+      properties:
+        isbn:
+          type: string
+          description: Book ISBN Number
+          example: "9781491943533"
+        title:
+          type: string
+          description: Book title
+          example: Practical Modern JavaScript
+        subtitle:
+          type: string
+          description: Book subtitle
+          example: Dive into ES6 and the Future of JavaScript
+          nullable: true
+        author:
+          type: string
+          description: Book author
+          example: "Nicolás Bevacqua"
+          nullable: true
+        published:
+          type: string
+          description: "Book publish date (format: Y-m-d H:i:s)"
+          example: "2017-07-16 00:00:00"
+          nullable: true
+        publisher:
+          type: string
+          description: Book publisher
+          example: "O'Reilly Media"
+          nullable: true
+        pages:
+          type: number
+          description: Book total page
+          example: 334
+          nullable: true
+        description:
+          type: string
+          description: Book description
+          example: "To get the most out of modern JavaScript, you need learn the latest features of its parent specification, ECMAScript 6 (ES6). This book provides a highly practical look at ES6, without getting lost in the specification or its implementation details."
+          nullable: true
+        website:
+          type: string
+          description: Book Url
+          example: "https://github.com/mjavascript/practical-modern-javascript"
+          nullable: true
+    StoreBookResponse422:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Details of error
+        errors:
+          type: object
+          properties:
+            isbn:
+              type: array
+              items:
+                type: string
+                description: isbn parameters error details
+            title:
+              type: array
+              items:
+                type: string
+                description: title parameters error details
+            subtitle:
+              type: array
+              items:
+                type: string
+                description: subtitle parameters error details
+            author:
+              type: array
+              items:
+                type: string
+                description: author parameters error details
+            published:
+              type: array
+              items:
+                type: string
+                description: published parameters error details
+            publisher:
+              type: array
+              items:
+                type: string
+                description: publisher parameters error details
+            pages:
+              type: array
+              items:
+                type: string
+                description: pages parameters error details
+            description:
+              type: array
+              items:
+                type: string
+                description: description parameters error details
+            website:
+              type: array
+              items:
+                type: string
+                description: website parameters error details
+    StoreUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: User name
+          example: Mark
+        email:
+          type: string
+          description: User email
+          example: mark@gmail.com
+        password:
+          type: string
+          description: User password
+          example: password
+        password_confirmation:
+          type: string
+          description: User password confirmation must be same with password
+          example: password
+    StoreUserResponse422:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Details of error
+        errors:
+          type: object
+          properties:
+            name:
+              type: array
+              items:
+                type: string
+                description: name parameters error details
+            email:
+              type: array
+              items:
+                type: string
+                description: email parameters error details
+            password:
+              type: array
+              items:
+                type: string
+                description: password parameters error details
+            password_confirmation:
+              type: array
+              items:
+                type: string
+                description: password_confirmation parameters error details
+    LoginUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          description: User email
+          example: mark@gmail.com
+        password:
+          type: string
+          description: User password
+          example: password
+    LoginUserResponse422:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Details of error
+        errors:
+          type: object
+          properties:
+            email:
+              type: array
+              items:
+                type: string
+                description: email parameters error details
+            password:
+              type: array
+              items:
+                type: string
+                description: password parameters error details
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message description

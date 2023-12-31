@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo '🏗️👷 please be patient, this may take a while... 🏗️👷'
+
+# Run lint-staged to make sure staged files are linted
+npx lint-staged
+npm run check-all
+
+echo '🎉 No error found: committing this now.... ✨🚀🏄‍♂️🍻'
